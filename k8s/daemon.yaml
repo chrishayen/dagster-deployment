@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: daemon
+  labels:
+    app: daemon
+spec:
+  containers:
+    - name: daemon
+      image: dagster-daemon
+      imagePullPolicy: Never
