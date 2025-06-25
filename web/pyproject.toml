@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "web"
+version = "0.1.0"
+description = ""
+authors = ["Chris Hayen <chayen@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "<3.13,>=3.9"
+dagster-webserver = "^1.10.21"
+dagster-postgres = "^0.26.21"
+dagster = "^1.10.21"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+#[tool.dagster]
+#host = "0.0.0.0"
+#port = "3000"
+
+#[tool.dagster.telemetry]
+#enabled = false
