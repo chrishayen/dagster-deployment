@@ -1,9 +1,7 @@
 FROM python:3.12-slim
 ARG DAGSTER_APP="not_set"
-# ARG PORT="not_set"
 
 RUN if [ "$DAGSTER_APP" = "not_set" ]; then echo "ERROR: DAGSTER_APP must be set" && exit 1; fi
-# RUN if [ "$PORT" = "not_set" ]; then echo "ERROR: PORT must be set" && exit 1; fi
 
 # install poetry
 RUN apt-get update && apt-get install -y pipx
@@ -25,5 +23,4 @@ WORKDIR /app
 RUN poetry install
 RUN chmod +x ./start.sh
 
-# EXPOSE ${PORT}
 CMD ["./start.sh"]
