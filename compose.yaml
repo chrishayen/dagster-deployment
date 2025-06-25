@@ -1,0 +1,37 @@
+services:
+  code:
+    build:
+      args:
+        DAGSTER_APP: code
+    ports:
+      - "4000:4000"
+    depends_on:
+      - postgres
+
+  web:
+    build:
+      args:
+        DAGSTER_APP: web
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+      - daemon
+      - code
+
+  daemon:
+    build:
+      args:
+        DAGSTER_APP: daemon
+    depends_on:
+      - postgres
+      - code
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: dagster
+      POSTGRES_PASSWORD: dagster
+      POSTGRES_DB: dagster
+    ports:
+      - "5432:5432"
