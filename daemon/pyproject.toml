@@ -9,6 +9,7 @@ readme = "README.md"
 python = ">=3.12,<3.13"
 dagster = "^1.10.21"
 dagster-postgres = "^0.26.21"
+dagster-k8s = "^0.26.21"
 
 
 [build-system]
