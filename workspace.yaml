@@ -1,5 +1,5 @@
 load_from:
   - grpc_server:
-      host: 127.0.0.1
+      host: code
       port: 4000
       location_name: "main"
