@@ -13,14 +13,16 @@ ENV PATH="/root/.local/bin:$PATH"
 # set up dagster home and config
 RUN mkdir /dagster
 ENV DAGSTER_HOME=/dagster
-
 COPY dagster.yaml /dagster/dagster.yaml
 
 COPY ./${DAGSTER_APP} /app
 COPY workspace.yaml /
 
 WORKDIR /app
-RUN poetry install
+RUN poetry config virtualenvs.in-project true && poetry install
 RUN chmod +x ./start.sh
+
+# Add the virtualenv bin to PATH so dagster command is available
+ENV PATH="/app/.venv/bin:$PATH"
 
 CMD ["./start.sh"]

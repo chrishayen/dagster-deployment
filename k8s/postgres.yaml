@@ -24,17 +24,17 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: dagster-postgresql-secret
-                  key: username
+                  key: POSTGRESQL_USERNAME
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: dagster-postgresql-secret
-                  key: password
+                  key: POSTGRESQL_PASSWORD
             - name: POSTGRES_DB
               valueFrom:
                 secretKeyRef:
                   name: dagster-postgresql-secret
-                  key: database
+                  key: POSTGRESQL_DB
           resources:
             requests:
               memory: "256Mi"

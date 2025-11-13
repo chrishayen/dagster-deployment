@@ -37,6 +37,9 @@ spec:
               port: 4000
             initialDelaySeconds: 10
             periodSeconds: 5
+          envFrom:
+            - secretRef:
+                name: dagster-postgresql-secret
 ---
 apiVersion: v1
 kind: Service

@@ -1,10 +1,17 @@
+telemetry:
+  enabled: false
+
 storage:
   postgres:
     postgres_db:
-      hostname: postgres
-      username: dagster
-      password: dagster
-      db_name: dagster
+      hostname:
+        env: POSTGRESQL_HOSTNAME
+      username:
+        env: POSTGRESQL_USERNAME
+      password:
+        env: POSTGRESQL_PASSWORD
+      db_name:
+        env: POSTGRESQL_DB
       port: 5432
 
 #compute_logs:
@@ -37,3 +44,12 @@ run_launcher:
     image_pull_policy: Never
     instance_config_map: dagster-instance
     postgres_password_secret: dagster-postgresql-secret
+    env_config_maps:
+      - dagster-instance
+    env_secrets:
+      - dagster-postgresql-secret
+    env_vars:
+      - "POSTGRESQL_HOSTNAME"
+      - "POSTGRESQL_USERNAME"
+      - "POSTGRESQL_PASSWORD"
+      - "POSTGRESQL_DB"

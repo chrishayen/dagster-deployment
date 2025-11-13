@@ -18,6 +18,9 @@ spec:
         - name: daemon
           image: dagster-daemon
           imagePullPolicy: Never
+          envFrom:
+            - secretRef:
+                name: dagster-postgresql-secret
           resources:
             requests:
               memory: "512Mi"
