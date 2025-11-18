@@ -14,6 +14,7 @@ echo "Deleting Kubernetes resources..."
 kubectl delete -f k8s/web.yaml --ignore-not-found=true
 kubectl delete -f k8s/daemon.yaml --ignore-not-found=true
 kubectl delete -f k8s/code.yaml --ignore-not-found=true
+kubectl delete -f k8s/dask.yaml --ignore-not-found=true
 kubectl delete -f k8s/postgres.yaml --ignore-not-found=true
 kubectl delete -f k8s/role.yaml --ignore-not-found=true
 kubectl delete -f k8s/configmap.yaml --ignore-not-found=true

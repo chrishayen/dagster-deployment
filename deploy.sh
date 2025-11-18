@@ -21,6 +21,7 @@ kubectl apply -f k8s/secret.yaml
 kubectl apply -f k8s/configmap.yaml
 kubectl apply -f k8s/role.yaml
 kubectl apply -f k8s/postgres.yaml
+kubectl apply -f k8s/dask.yaml
 kubectl apply -f k8s/code.yaml
 kubectl apply -f k8s/daemon.yaml
 kubectl apply -f k8s/web.yaml
@@ -28,6 +29,8 @@ kubectl apply -f k8s/web.yaml
 echo ""
 echo "Waiting for deployments to be ready..."
 kubectl wait --for=condition=available --timeout=120s deployment/postgres
+kubectl wait --for=condition=available --timeout=120s deployment/dask-scheduler
+kubectl wait --for=condition=available --timeout=120s deployment/dask-worker
 kubectl wait --for=condition=available --timeout=120s deployment/code
 kubectl wait --for=condition=available --timeout=120s deployment/daemon
 kubectl wait --for=condition=available --timeout=120s deployment/web

@@ -1,0 +1,96 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: dask-scheduler
+spec:
+  type: ClusterIP
+  selector:
+    app: dask-scheduler
+  ports:
+    - name: scheduler
+      port: 8786
+      targetPort: 8786
+    - name: dashboard
+      port: 8787
+      targetPort: 8787
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dask-scheduler
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dask-scheduler
+  template:
+    metadata:
+      labels:
+        app: dask-scheduler
+    spec:
+      containers:
+        - name: scheduler
+          image: ghcr.io/dask/dask:2024.12.1
+          command:
+            - dask-scheduler
+          ports:
+            - containerPort: 8786
+              name: scheduler
+            - containerPort: 8787
+              name: dashboard
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+          livenessProbe:
+            tcpSocket:
+              port: 8786
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            tcpSocket:
+              port: 8786
+            initialDelaySeconds: 5
+            periodSeconds: 5
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dask-worker
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: dask-worker
+  template:
+    metadata:
+      labels:
+        app: dask-worker
+    spec:
+      containers:
+        - name: worker
+          image: ghcr.io/dask/dask:2024.12.1
+          command:
+            - dask-worker
+            - dask-scheduler:8786
+          args:
+            - --nthreads
+            - "2"
+            - --memory-limit
+            - 2GB
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "500m"
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
+          volumeMounts:
+            - name: dagster-io
+              mountPath: /tmp/dagster-io
+      volumes:
+        - name: dagster-io
+          emptyDir: {}

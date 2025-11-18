@@ -7,14 +7,17 @@ if [ -z "$COMPONENT" ]; then
     echo "Usage: ./logs.sh <component> [--follow]"
     echo ""
     echo "Available components:"
-    echo "  web       - Dagster webserver"
-    echo "  code      - Dagster code server"
-    echo "  daemon    - Dagster daemon"
-    echo "  postgres  - PostgreSQL database"
+    echo "  web              - Dagster webserver"
+    echo "  code             - Dagster code server"
+    echo "  daemon           - Dagster daemon"
+    echo "  postgres         - PostgreSQL database"
+    echo "  dask-scheduler   - Dask scheduler"
+    echo "  dask-worker      - Dask workers"
     echo ""
     echo "Examples:"
     echo "  ./logs.sh web"
     echo "  ./logs.sh daemon --follow"
+    echo "  ./logs.sh dask-scheduler --follow"
     exit 1
 fi
 
@@ -29,12 +32,12 @@ if [ "$FOLLOW" == "--follow" ] || [ "$FOLLOW" == "-f" ]; then
 fi
 
 case $COMPONENT in
-    web|code|daemon|postgres)
+    web|code|daemon|postgres|dask-scheduler|dask-worker)
         LABEL="app=$COMPONENT"
         ;;
     *)
         echo "Error: Unknown component '$COMPONENT'"
-        echo "Available: web, code, daemon, postgres"
+        echo "Available: web, code, daemon, postgres, dask-scheduler, dask-worker"
         exit 1
         ;;
 esac

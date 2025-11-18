@@ -40,6 +40,12 @@ spec:
           envFrom:
             - secretRef:
                 name: dagster-postgresql-secret
+          volumeMounts:
+            - name: dagster-io
+              mountPath: /tmp/dagster-io
+      volumes:
+        - name: dagster-io
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
