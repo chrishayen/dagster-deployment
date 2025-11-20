@@ -36,20 +36,9 @@ code_servers:
   local_startup_timeout: 360
 
 run_launcher:
-  module: dagster_k8s.launcher
-  class: K8sRunLauncher
-  config:
-    service_account_name: default
-    job_image: dagster-code-server
-    image_pull_policy: Never
-    instance_config_map: dagster-instance
-    postgres_password_secret: dagster-postgresql-secret
-    env_config_maps:
-      - dagster-instance
-    env_secrets:
-      - dagster-postgresql-secret
-    env_vars:
-      - "POSTGRESQL_HOSTNAME"
-      - "POSTGRESQL_USERNAME"
-      - "POSTGRESQL_PASSWORD"
-      - "POSTGRESQL_DB"
+  module: dagster.core.launcher
+  class: DefaultRunLauncher
+
+run_coordinator:
+  module: dagster.core.run_coordinator
+  class: QueuedRunCoordinator

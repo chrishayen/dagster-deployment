@@ -3,29 +3,69 @@ services:
     build:
       args:
         DAGSTER_APP: code
+    environment:
+      POSTGRESQL_HOSTNAME: postgres
+      POSTGRESQL_USERNAME: dagster
+      POSTGRESQL_PASSWORD: dagster
+      POSTGRESQL_DB: dagster
+      CELERY_BROKER_URL: pyamqp://dagster:dagster@rabbitmq:5672//
+      CELERY_BACKEND_URL: rpc://
     ports:
       - "4000:4000"
     depends_on:
       - postgres
+      - rabbitmq
 
   web:
     build:
       args:
         DAGSTER_APP: web
+    environment:
+      POSTGRESQL_HOSTNAME: postgres
+      POSTGRESQL_USERNAME: dagster
+      POSTGRESQL_PASSWORD: dagster
+      POSTGRESQL_DB: dagster
+      CELERY_BROKER_URL: pyamqp://dagster:dagster@rabbitmq:5672//
+      CELERY_BACKEND_URL: rpc://
     ports:
       - "3000:3000"
     depends_on:
       - postgres
       - daemon
       - code
+      - rabbitmq
 
   daemon:
     build:
       args:
         DAGSTER_APP: daemon
+    environment:
+      POSTGRESQL_HOSTNAME: postgres
+      POSTGRESQL_USERNAME: dagster
+      POSTGRESQL_PASSWORD: dagster
+      POSTGRESQL_DB: dagster
+      CELERY_BROKER_URL: pyamqp://dagster:dagster@rabbitmq:5672//
+      CELERY_BACKEND_URL: rpc://
     depends_on:
       - postgres
       - code
+      - rabbitmq
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    environment:
+      POSTGRESQL_HOSTNAME: postgres
+      POSTGRESQL_USERNAME: dagster
+      POSTGRESQL_PASSWORD: dagster
+      POSTGRESQL_DB: dagster
+      CELERY_BROKER_URL: pyamqp://dagster:dagster@rabbitmq:5672//
+      CELERY_BACKEND_URL: rpc://
+    depends_on:
+      - postgres
+      - code
+      - rabbitmq
 
   postgres:
     image: postgres:16
@@ -35,3 +75,12 @@ services:
       POSTGRES_DB: dagster
     ports:
       - "5432:5432"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: dagster
+      RABBITMQ_DEFAULT_PASS: dagster
+    ports:
+      - "5672:5672"
+      - "15672:15672"

@@ -1,7 +1,4 @@
 FROM python:3.12-slim
-ARG DAGSTER_APP="not_set"
-
-RUN if [ "$DAGSTER_APP" = "not_set" ]; then echo "ERROR: DAGSTER_APP must be set" && exit 1; fi
 
 # install poetry
 RUN apt-get update && apt-get install -y pipx
@@ -14,15 +11,19 @@ ENV PATH="/root/.local/bin:$PATH"
 RUN mkdir /dagster
 ENV DAGSTER_HOME=/dagster
 COPY dagster.yaml /dagster/dagster.yaml
-
-COPY ./${DAGSTER_APP} /app
 COPY workspace.yaml /
 
+# Copy worker dependencies
+COPY ./worker /app
 WORKDIR /app
 RUN poetry config virtualenvs.in-project true && poetry lock && poetry install
-RUN chmod +x ./start.sh
+
+# Also copy the code directory so worker can import the modules
+COPY ./code/code /app/code
 
 # Add the virtualenv bin to PATH so dagster command is available
 ENV PATH="/app/.venv/bin:$PATH"
+
+RUN chmod +x ./start.sh
 
 CMD ["./start.sh"]
