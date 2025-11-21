@@ -1,35 +1,52 @@
 """Test RabbitMQ connection."""
 import pika
 import os
+import json
+import ssl
 
 
 def test_rabbitmq_connection():
     """Test RabbitMQ connection by creating a queue and sending/receiving a message."""
-    # Get connection parameters from environment or use defaults
-    broker_url = os.getenv('CELERY_BROKER_URL', 'pyamqp://dagster:dagster@localhost:5672//')
+    # Get connection parameters from environment variables
+    connection_url = os.getenv('APP_CONFIG_BROKER_CONNECTION_URL')
+    username = os.getenv('APP_CONFIG_BROKER_USERNAME')
+    password = os.getenv('APP_CONFIG_BROKER_PASSWORD')
+    ssl_options_str = os.getenv('APP_CONFIG_BROKER_SSL_OPTIONS')
 
-    # Parse the broker URL
-    # Format: pyamqp://user:pass@host:port//
-    if broker_url.startswith('pyamqp://'):
-        broker_url = broker_url.replace('pyamqp://', '')
-
-    # Split credentials and host
-    if '@' in broker_url:
-        credentials, host_info = broker_url.split('@')
-        username, password = credentials.split(':')
-    else:
+    # Fallback to defaults if not provided
+    if not connection_url:
+        connection_url = 'https://localhost:5672/'
+    if not username:
         username = 'dagster'
+    if not password:
         password = 'dagster'
-        host_info = broker_url
+
+    # Parse connection URL
+    # Format: https://host:port/
+    connection_url = connection_url.rstrip('/')
+
+    # Remove protocol prefix
+    if '://' in connection_url:
+        protocol, host_info = connection_url.split('://', 1)
+        use_ssl = protocol == 'https'
+    else:
+        host_info = connection_url
+        use_ssl = False
 
     # Parse host and port
-    host_info = host_info.rstrip('/')
     if ':' in host_info:
-        host, port = host_info.split(':')
+        host, port = host_info.rsplit(':', 1)
         port = int(port)
     else:
         host = host_info
-        port = 5672
+        port = 5671 if use_ssl else 5672
+
+    # Parse SSL options
+    ssl_context = None
+    if ssl_options_str:
+        ssl_options = json.loads(ssl_options_str)
+        if use_ssl and 'cafile' in ssl_options:
+            ssl_context = ssl.create_default_context(cafile=ssl_options['cafile'])
 
     # Create connection
     credentials_obj = pika.PlainCredentials(username, password)
@@ -37,6 +54,7 @@ def test_rabbitmq_connection():
         host=host,
         port=port,
         credentials=credentials_obj,
+        ssl_options=pika.SSLOptions(ssl_context) if ssl_context else None,
         connection_attempts=3,
         retry_delay=2
     )
