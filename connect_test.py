@@ -15,9 +15,9 @@ def test_rabbitmq_connection():
 
     # Get connection parameters from environment variables
     connection_url = os.getenv('APP_CONFIG_BROKER_CONNECTION_URL')
-    username = os.getenv('APP_CONFIG_BROKER_USERNAME')
-    password = os.getenv('APP_CONFIG_BROKER_PASSWORD')
-    ssl_options_str = os.getenv('APP_CONFIG_BROKER_SSL_OPTIONS')
+    username = os.getenv('APP_CONFIG_BROKER_CONNECTION_LOGIN')
+    password = os.getenv('APP_CONFIG_BROKER_CONNECTION_PASSWORD')
+    ssl_options_str = os.getenv('APP_CONFIG_BROKER_CONNECTION_SSL_OPTIONS')
 
     # Fallback to defaults if not provided
     if not connection_url:

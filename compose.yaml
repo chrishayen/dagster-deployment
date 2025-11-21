@@ -8,7 +8,9 @@ services:
       POSTGRESQL_USERNAME: dagster
       POSTGRESQL_PASSWORD: dagster
       POSTGRESQL_DB: dagster
-      CELERY_BROKER_URL: pyamqp://dagster:dagster@rabbitmq:5672//
+      APP_CONFIG_BROKER_CONNECTION_URL: https://rabbitmq:5672/
+      APP_CONFIG_BROKER_CONNECTION_LOGIN: dagster
+      APP_CONFIG_BROKER_CONNECTION_PASSWORD: dagster
       CELERY_BACKEND_URL: rpc://
     ports:
       - "4000:4000"
@@ -25,7 +27,9 @@ services:
       POSTGRESQL_USERNAME: dagster
       POSTGRESQL_PASSWORD: dagster
       POSTGRESQL_DB: dagster
-      CELERY_BROKER_URL: pyamqp://dagster:dagster@rabbitmq:5672//
+      APP_CONFIG_BROKER_CONNECTION_URL: https://rabbitmq:5672/
+      APP_CONFIG_BROKER_CONNECTION_LOGIN: dagster
+      APP_CONFIG_BROKER_CONNECTION_PASSWORD: dagster
       CELERY_BACKEND_URL: rpc://
     ports:
       - "3000:3000"
@@ -44,7 +48,9 @@ services:
       POSTGRESQL_USERNAME: dagster
       POSTGRESQL_PASSWORD: dagster
       POSTGRESQL_DB: dagster
-      CELERY_BROKER_URL: pyamqp://dagster:dagster@rabbitmq:5672//
+      APP_CONFIG_BROKER_CONNECTION_URL: https://rabbitmq:5672/
+      APP_CONFIG_BROKER_CONNECTION_LOGIN: dagster
+      APP_CONFIG_BROKER_CONNECTION_PASSWORD: dagster
       CELERY_BACKEND_URL: rpc://
     depends_on:
       - postgres
@@ -60,7 +66,9 @@ services:
       POSTGRESQL_USERNAME: dagster
       POSTGRESQL_PASSWORD: dagster
       POSTGRESQL_DB: dagster
-      CELERY_BROKER_URL: pyamqp://dagster:dagster@rabbitmq:5672//
+      APP_CONFIG_BROKER_CONNECTION_URL: https://rabbitmq:5672/
+      APP_CONFIG_BROKER_CONNECTION_LOGIN: dagster
+      APP_CONFIG_BROKER_CONNECTION_PASSWORD: dagster
       CELERY_BACKEND_URL: rpc://
     depends_on:
       - postgres
