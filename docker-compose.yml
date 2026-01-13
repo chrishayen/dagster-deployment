@@ -1,0 +1,93 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: dagster
+      POSTGRES_PASSWORD: dagster
+      POSTGRES_DB: dagster
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dagster"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_running"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  dagster-webserver:
+    build:
+      context: .
+      dockerfile: Dockerfile.dagster
+    ports:
+      - "3000:3000"
+    environment:
+      DAGSTER_HOME: /opt/dagster/dagster_home
+      CELERY_BROKER_URL: amqp://guest:guest@rabbitmq:5672//
+      DAGSTER_PG_HOST: postgres
+    volumes:
+      - dagster-home:/opt/dagster/dagster_home
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/server_info"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    command: ["dagster-webserver", "-h", "0.0.0.0", "-p", "3000", "-m", "dqueue_dagster.definitions"]
+
+  dagster-daemon:
+    build:
+      context: .
+      dockerfile: Dockerfile.dagster
+    environment:
+      DAGSTER_HOME: /opt/dagster/dagster_home
+      CELERY_BROKER_URL: amqp://guest:guest@rabbitmq:5672//
+      DAGSTER_PG_HOST: postgres
+    volumes:
+      - dagster-home:/opt/dagster/dagster_home
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      dagster-webserver:
+        condition: service_healthy
+    command: ["dagster-daemon", "run", "-m", "dqueue_dagster.definitions"]
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    environment:
+      CELERY_BROKER_URL: amqp://guest:guest@rabbitmq:5672//
+      DAGSTER_HOME: /opt/dagster/dagster_home
+      DAGSTER_PG_HOST: postgres
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    deploy:
+      replicas: 20
+    command: ["dagster-celery", "worker", "start", "-A", "dagster_celery.app", "-y", "/app/celery_config.yaml"]
+
+volumes:
+  dagster-home:
+  postgres-data:
