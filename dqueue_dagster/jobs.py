@@ -51,7 +51,7 @@ def create_job(job_id: str) -> dg.JobDefinition:
         name=job_id,
         executor_def=celery_executor,
         config={
-            "execution": {"config": {"broker": "pyamqp://guest:guest@rabbitmq:5672//"}},
+            "execution": {"config": {"broker": {"env": "CELERY_BROKER_URL"}, "backend": {"env": "CELERY_RESULT_BACKEND"}}},
             "ops": {"process_work": {"config": {"job_id": job_id}}},
         },
     )

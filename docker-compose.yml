@@ -36,6 +36,7 @@ services:
     environment:
       DAGSTER_HOME: /opt/dagster/dagster_home
       CELERY_BROKER_URL: amqp://guest:guest@rabbitmq:5672//
+      CELERY_RESULT_BACKEND: db+postgresql://dagster:dagster@postgres:5432/dagster
       DAGSTER_PG_HOST: postgres
     volumes:
       - dagster-home:/opt/dagster/dagster_home
@@ -59,6 +60,7 @@ services:
     environment:
       DAGSTER_HOME: /opt/dagster/dagster_home
       CELERY_BROKER_URL: amqp://guest:guest@rabbitmq:5672//
+      CELERY_RESULT_BACKEND: db+postgresql://dagster:dagster@postgres:5432/dagster
       DAGSTER_PG_HOST: postgres
     volumes:
       - dagster-home:/opt/dagster/dagster_home
@@ -77,6 +79,7 @@ services:
       dockerfile: Dockerfile.worker
     environment:
       CELERY_BROKER_URL: amqp://guest:guest@rabbitmq:5672//
+      CELERY_RESULT_BACKEND: db+postgresql://dagster:dagster@postgres:5432/dagster
       DAGSTER_HOME: /opt/dagster/dagster_home
       DAGSTER_PG_HOST: postgres
     depends_on:
